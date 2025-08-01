@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <title>MovieFlix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #e50914;
+            --dark-color: #0c0c0c;
+            --light-dark-color: #1a1a1a;
+            --text-color: #ffffff;
+            --gray-text: #8c8c8c;
+            --card-bg-color: #212121;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-color);
+            color: var(--text-color);
+        }
+
+        /* --- Header --- */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 4%; background-color: rgba(12, 12, 12, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; width: 100%; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        #menu-btn { background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
+        .logo { font-size: 2.2rem; font-weight: 700; color: var(--primary-color); text-decoration: none; cursor: pointer; }
+        .search-container { position: relative; display: flex; align-items: center; }
+        #search-icon { position: absolute; left: 10px; color: var(--gray-text); }
+        #search-bar { padding: 8px 12px 8px 35px; width: 230px; border-radius: 20px; border: 1px solid #333; background-color: var(--light-dark-color); color: var(--text-color); font-size: 0.9rem; transition: width 0.3s; }
+        #search-bar:focus { width: 280px; }
+
+        /* --- Sidenav --- */
+        .sidenav { height: 100%; width: 250px; position: fixed; z-index: 200; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; transform: translateX(-100%); }
+        .sidenav.active { transform: translateX(0); }
+        .sidenav a { padding: 10px 15px 10px 32px; text-decoration: none; font-size: 1.1rem; color: var(--gray-text); display: block; transition: 0.3s; }
+        .sidenav a:hover { color: var(--text-color); background-color: var(--primary-color); }
+        .sidenav .close-btn { position: absolute; top: 15px; right: 25px; font-size: 36px; color: white; cursor: pointer;}
+        
+        /* --- Main Content (Home Page) --- */
+        .main-content { padding: 20px 4%; }
+        .category-section { margin-bottom: 40px; }
+        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .category-title { font-size: 1.6rem; font-weight: 600; }
+        .view-all-btn { background: none; border: none; color: var(--gray-text); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: color 0.3s; }
+        .view-all-btn:hover { color: var(--text-color); }
+        .movie-row { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--primary-color) var(--dark-color); }
+        .movie-row::-webkit-scrollbar { height: 8px; }
+        .movie-row::-webkit-scrollbar-track { background: transparent; }
+        .movie-row::-webkit-scrollbar-thumb { background-color: #222; border-radius: 10px; }
+        .movie-row:hover::-webkit-scrollbar-thumb { background-color: var(--primary-color); }
+        .movie-card { border-radius: 8px; overflow: hidden; transition: transform 0.3s ease; cursor: pointer; flex: 0 0 180px; width: 180px; position: relative; }
+        .movie-card:hover { transform: scale(1.1); z-index: 10; }
+        .movie-card img { width: 100%; height: 250px; object-fit: cover; display: block; }
+        .movie-card .card-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+
+        /* --- Grid View Containers --- */
+        .grid-view-container { display: none; padding: 0; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
+
+        /* --- List View ("View All" page) --- */
+        #list-view-container { display: none; }
+        .list-view-header { display: flex; align-items: center; justify-content: center; position: relative; padding: 20px 0; border-bottom: 1px solid #222; }
+        .list-view-header .logo { font-size: 2.5rem; color: white; }
+        .list-view-header .logo span { color: var(--primary-color); }
+        .list-view-back-btn { position: absolute; left: 4%; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
+        .list-items { display: flex; flex-direction: column; gap: 15px; padding: 20px 4%; }
+        .list-item-card { display: flex; align-items: center; background-color: var(--card-bg-color); border-radius: 12px; padding: 12px; cursor: pointer; transition: background-color 0.3s; }
+        .list-item-card:hover { background-color: #333; }
+        .list-item-card img { width: 80px; height: 120px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+        .list-item-card .info { margin-left: 20px; }
+        .list-item-card .info .title { font-size: 1.1rem; font-weight: 500; line-height: 1.4; }
+
+        /* --- Skeleton Loader --- */
+        .loader-container { padding: 20px 4%; }
+        .skeleton { background-color: #1a1a1a; border-radius: 5px; position: relative; overflow: hidden; }
+        .skeleton.title { width: 250px; height: 30px; margin-bottom: 20px; }
+        .skeleton.card { width: 180px; height: 250px; flex-shrink: 0; }
+        .skeleton::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, #2a2a2a, transparent); animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 100% { left: 100%; } }
+
+        /* --- Movie Details Overlay --- */
+        #movie-details-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        #movie-details-overlay.visible { opacity: 1; visibility: visible; }
+        .details-content { background-color: var(--light-dark-color); border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 15px; max-width: 500px; width: 100%; position: relative; text-align: center; padding: 25px; transform: scale(0.95); transition: transform 0.3s; }
+        #movie-details-overlay.visible .details-content { transform: scale(1); }
+        .details-poster img { width: 100%; max-width: 300px; height: auto; border-radius: 8px; }
+        .details-info h2 { font-size: 2rem; margin-bottom: 8px; }
+        .details-info .category-tag { background-color: var(--dark-color); color: var(--gray-text); padding: 5px 10px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9rem; }
+        .details-info .download-btn { display: inline-block; padding: 12px 25px; background-color: var(--primary-color); color: var(--text-color); text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 1.1rem; }
+        #back-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; }
+        .message { text-align: center; font-size: 1.2rem; color: var(--gray-text); }
+    </style>
+</head>
+<body>
+    
+    <div id="sidenav" class="sidenav">
+        <a href="javascript:void(0)" class="close-btn" id="close-menu-btn">×</a>
+        <a href="#" class="category-link" data-category="Hollywood Movies">Hollywood Movies</a>
+        <a href="#" class="category-link" data-category="Comedy Movies">Comedy Movies</a>
+        <a href="#" class="category-link" data-category="South Indian Movies">South Indian Movies</a>
+        <a href="#" class="category-link" data-category="Bollywood Movies">Bollywood Movies</a>
+        <a href="#" class="category-link" data-category="Web Series">Web Series</a>
+        <a href="#" class="category-link" data-category="Animation Movies">Animation Movies</a>
+    </div>
+
+    <div id="main-app-view">
+        <header>
+            <div class="header-left">
+                <button id="menu-btn">☰</button>
+                <a class="logo">Ansarmissan</a>
+            </div>
+            <div class="search-container">
+                <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+                <input type="text" id="search-bar" placeholder="Titles, genres...">
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="loader-container">
+                 <div class="skeleton title"></div>
+                 <div class="movie-row"><div class="skeleton card"></div><div class="skeleton card"></div><div class="skeleton card"></div><div class="skeleton card"></div></div>
+            </div>
+            <div id="categories-container" style="display: none;"></div>
+            <div id="search-results-container" class="grid-view-container">
+                <h2 class="category-title">Search Results</h2>
+                <div class="results-grid" id="search-grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="list-view-container">
+        <div class="list-view-header">
+            <button class="list-view-back-btn" id="list-view-back-btn">←</button>
+            <div class="logo">Ansarmissan<span> Ansarmissan</span></div>
+        </div>
+        <div class="list-items" id="list-items-grid"></div>
+    </div>
+
+    <!-- POORA DETAILS POP-UP HTML YAHAN HAI -->
+    <div id="movie-details-overlay">
+        <div class="details-content">
+            <button id="back-btn">×</button>
+            <div class="details-poster"><img id="details-img" src="" alt="Poster"></div>
+            <div class="details-info">
+                <h2 id="details-title"></h2>
+                <span id="details-category" class="category-tag"></span>
+                <a id="details-download-btn" href="#" class="download-btn" download>Download Now</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+        const firebaseConfig = {
+  apiKey: "AIzaSyDuj2qSg1bp0xD9DRycwN-ilm7G8Ta1wac",
+  authDomain: "nfgmovie.firebaseapp.com",
+  databaseURL: "https://nfgmovie-default-rtdb.firebaseio.com",
+  projectId: "nfgmovie",
+  storageBucket: "nfgmovie.firebasestorage.app",
+  messagingSenderId: "817690106012",
+  appId: "1:817690106012:web:70ba4634d03603f677f559",
+  measurementId: "G-L6KK21QM98"
+};
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const moviesRef = ref(database, 'movies/');
+
+        const mainAppView = document.getElementById('main-app-view');
+        const listViewContainer = document.getElementById('list-view-container');
+        const loaderContainer = document.getElementById('loader-container');
+        const categoriesContainer = document.getElementById('categories-container');
+        const searchBar = document.getElementById('search-bar');
+        const searchResultsContainer = document.getElementById('search-results-container');
+        const searchGrid = document.getElementById('search-grid');
+        const listItemsGrid = document.getElementById('list-items-grid');
+        const detailsOverlay = document.getElementById('movie-details-overlay');
+        
+        let allMovies = [];
+
+        onValue(moviesRef, (snapshot) => {
+            if (!snapshot.exists()) { loaderContainer.innerHTML = '<p class="message">No movies found.</p>'; return; }
+            const data = snapshot.val();
+            allMovies = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            const groupedMovies = allMovies.reduce((acc, movie) => {
+                const category = movie.category || 'Uncategorized';
+                if (!acc[category]) acc[category] = [];
+                acc[category].push(movie);
+                return acc;
+            }, {});
+            loaderContainer.style.display = 'none';
+            categoriesContainer.style.display = 'block';
+            displayMoviesByCategory(groupedMovies);
+        }, { onlyOnce: true });
+
+        function createMovieCard(movie) {
+            const movieCard = document.createElement('div');
+            movieCard.className = 'movie-card';
+            movieCard.dataset.movieId = movie.id; 
+            movieCard.innerHTML = `<img src="${movie.posterUrl}" alt="${movie.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/180x250.png?text=No+Image';"><div class="card-overlay"></div>`;
+            return movieCard;
+        }
+
+        function displayMoviesByCategory(groupedMovies) {
+            categoriesContainer.innerHTML = '';
+            const categoryOrder = ["Hollywood Movies", "Bollywood Movies", "South Indian Movies", "Web Series", "Comedy Movies", "Animation Movies"];
+            for (const category of categoryOrder) {
+                if (!groupedMovies[category]) continue;
+                const section = document.createElement('section');
+                section.className = 'category-section';
+                section.innerHTML = `<div class="category-header"><h2 class="category-title">${category}</h2><button class="view-all-btn" data-category="${category}">View All →</button></div>`;
+                const row = document.createElement('div');
+                row.className = 'movie-row';
+                groupedMovies[category].slice(0, 15).forEach(movie => row.appendChild(createMovieCard(movie)));
+                section.appendChild(row);
+                categoriesContainer.appendChild(section);
+            }
+        }
+
+        function createListItemCard(movie) {
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item-card';
+            listItem.dataset.movieId = movie.id;
+            listItem.innerHTML = `<img src="${movie.posterUrl}" alt="${movie.title}" onerror="this.style.display='none'"><div class="info"><h3 class="title">${movie.title}</h3></div>`;
+            return listItem;
+        }
+
+        function showListView(categoryName) {
+            mainAppView.style.display = 'none';
+            listViewContainer.style.display = 'block';
+            const categoryMovies = allMovies.filter(m => m.category === categoryName);
+            listItemsGrid.innerHTML = '';
+            if (categoryMovies.length > 0) {
+                categoryMovies.slice().reverse().forEach(movie => listItemsGrid.appendChild(createListItemCard(movie)));
+            } else {
+                listItemsGrid.innerHTML = `<p class="message">No movies in this category.</p>`;
+            }
+        }
+        
+        function showHomePage() {
+            listViewContainer.style.display = 'none';
+            mainAppView.style.display = 'block';
+            searchResultsContainer.style.display = 'none';
+            categoriesContainer.style.display = 'block';
+            searchBar.value = '';
+        }
+        document.querySelector('.logo').addEventListener('click', showHomePage);
+        document.getElementById('list-view-back-btn').addEventListener('click', showHomePage);
+
+        searchBar.addEventListener('input', () => {
+            const searchTerm = searchBar.value.toLowerCase().trim();
+            if (searchTerm === '') { showHomePage(); return; }
+            categoriesContainer.style.display = 'none';
+            searchResultsContainer.style.display = 'block';
+            const filteredMovies = allMovies.filter(m => m.title.toLowerCase().includes(searchTerm));
+            searchGrid.innerHTML = '';
+            if (filteredMovies.length > 0) {
+                filteredMovies.forEach(movie => searchGrid.appendChild(createMovieCard(movie)));
+            } else {
+                searchGrid.innerHTML = `<p class="message">No movies found for '${searchBar.value}'</p>`;
+            }
+        });
+
+        function showMovieDetails(movieId) {
+            const movie = allMovies.find(m => m.id === movieId);
+            if (!movie) return;
+            document.getElementById('details-img').src = movie.posterUrl;
+            document.getElementById('details-title').textContent = movie.title;
+            document.getElementById('details-category').textContent = movie.category;
+            document.getElementById('details-download-btn').href = movie.movieUrl;
+            detailsOverlay.classList.add('visible');
+        }
+        
+        document.body.addEventListener('click', (e) => {
+            const movieCard = e.target.closest('.movie-card, .list-item-card');
+            if (movieCard) { showMovieDetails(movieCard.dataset.movieId); return; }
+            if (e.target.classList.contains('view-all-btn')) { showListView(e.target.dataset.category); }
+        });
+        
+        const sidenav = document.getElementById('sidenav');
+        document.getElementById('menu-btn').addEventListener('click', () => sidenav.classList.add('active'));
+        document.getElementById('close-menu-btn').addEventListener('click', () => sidenav.classList.remove('active'));
+        document.getElementById('back-btn').addEventListener('click', () => detailsOverlay.classList.remove('visible'));
+
+    </script>
+</body>
+</html>
