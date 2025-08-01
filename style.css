@@ -1,0 +1,86 @@
+
+        :root {
+            --primary-color: #e50914;
+            --dark-color: #0c0c0c;
+            --light-dark-color: #1a1a1a;
+            --text-color: #ffffff;
+            --gray-text: #8c8c8c;
+            --card-bg-color: #212121;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-color);
+            color: var(--text-color);
+        }
+
+        /* --- Header --- */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 4%; background-color: rgba(12, 12, 12, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; width: 100%; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        #menu-btn { background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
+        .logo { font-size: 2.2rem; font-weight: 700; color: var(--primary-color); text-decoration: none; cursor: pointer; }
+        .search-container { position: relative; display: flex; align-items: center; }
+        #search-icon { position: absolute; left: 10px; color: var(--gray-text); }
+        #search-bar { padding: 8px 12px 8px 35px; width: 230px; border-radius: 20px; border: 1px solid #333; background-color: var(--light-dark-color); color: var(--text-color); font-size: 0.9rem; transition: width 0.3s; }
+        #search-bar:focus { width: 280px; }
+
+        /* --- Sidenav --- */
+        .sidenav { height: 100%; width: 250px; position: fixed; z-index: 200; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; transform: translateX(-100%); }
+        .sidenav.active { transform: translateX(0); }
+        .sidenav a { padding: 10px 15px 10px 32px; text-decoration: none; font-size: 1.1rem; color: var(--gray-text); display: block; transition: 0.3s; }
+        .sidenav a:hover { color: var(--text-color); background-color: var(--primary-color); }
+        .sidenav .close-btn { position: absolute; top: 15px; right: 25px; font-size: 36px; color: white; cursor: pointer;}
+        
+        /* --- Main Content (Home Page) --- */
+        .main-content { padding: 20px 4%; }
+        .category-section { margin-bottom: 40px; }
+        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .category-title { font-size: 1.6rem; font-weight: 600; }
+        .view-all-btn { background: none; border: none; color: var(--gray-text); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: color 0.3s; }
+        .view-all-btn:hover { color: var(--text-color); }
+        .movie-row { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--primary-color) var(--dark-color); }
+        .movie-row::-webkit-scrollbar { height: 8px; }
+        .movie-row::-webkit-scrollbar-track { background: transparent; }
+        .movie-row::-webkit-scrollbar-thumb { background-color: #222; border-radius: 10px; }
+        .movie-row:hover::-webkit-scrollbar-thumb { background-color: var(--primary-color); }
+        .movie-card { border-radius: 8px; overflow: hidden; transition: transform 0.3s ease; cursor: pointer; flex: 0 0 180px; width: 180px; position: relative; }
+        .movie-card:hover { transform: scale(1.1); z-index: 10; }
+        .movie-card img { width: 100%; height: 250px; object-fit: cover; display: block; }
+        .movie-card .card-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+
+        /* --- Grid View Containers --- */
+        .grid-view-container { display: none; padding: 0; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
+
+        /* --- List View ("View All" page) --- */
+        #list-view-container { display: none; }
+        .list-view-header { display: flex; align-items: center; justify-content: center; position: relative; padding: 20px 0; border-bottom: 1px solid #222; }
+        .list-view-header .logo { font-size: 2.5rem; color: white; }
+        .list-view-header .logo span { color: var(--primary-color); }
+        .list-view-back-btn { position: absolute; left: 4%; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
+        .list-items { display: flex; flex-direction: column; gap: 15px; padding: 20px 4%; }
+        .list-item-card { display: flex; align-items: center; background-color: var(--card-bg-color); border-radius: 12px; padding: 12px; cursor: pointer; transition: background-color 0.3s; }
+        .list-item-card:hover { background-color: #333; }
+        .list-item-card img { width: 80px; height: 120px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+        .list-item-card .info { margin-left: 20px; }
+        .list-item-card .info .title { font-size: 1.1rem; font-weight: 500; line-height: 1.4; }
+
+        /* --- Skeleton Loader --- */
+        .loader-container { padding: 20px 4%; }
+        .skeleton { background-color: #1a1a1a; border-radius: 5px; position: relative; overflow: hidden; }
+        .skeleton.title { width: 250px; height: 30px; margin-bottom: 20px; }
+        .skeleton.card { width: 180px; height: 250px; flex-shrink: 0; }
+        .skeleton::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, #2a2a2a, transparent); animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 100% { left: 100%; } }
+
+        /* --- Movie Details Overlay --- */
+        #movie-details-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        #movie-details-overlay.visible { opacity: 1; visibility: visible; }
+        .details-content { background-color: var(--light-dark-color); border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 15px; max-width: 500px; width: 100%; position: relative; text-align: center; padding: 25px; transform: scale(0.95); transition: transform 0.3s; }
+        #movie-details-overlay.visible .details-content { transform: scale(1); }
+        .details-poster img { width: 100%; max-width: 300px; height: auto; border-radius: 8px; }
+        .details-info h2 { font-size: 2rem; margin-bottom: 8px; }
+        .details-info .category-tag { background-color: var(--dark-color); color: var(--gray-text); padding: 5px 10px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9rem; }
+        .details-info .download-btn { display: inline-block; padding: 12px 25px; background-color: var(--primary-color); color: var(--text-color); text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 1.1rem; }
+        #back-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; }
+        .message { text-align: center; font-size: 1.2rem; color: var(--gray-text); }
